@@ -1,6 +1,7 @@
 /*
 Copyright 2012 Jun Wako <wakojun@gmail.com>
 Copyright 2013 Oleg Kostyuk <cub.uanic@gmail.com>
+Copyright 2016 TAKAI, Yosiyuki <ypsilon.takai@gmail.com>
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

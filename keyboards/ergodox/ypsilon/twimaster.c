@@ -31,7 +31,7 @@ void i2c_init(void)
    * bits in the TWI Status Register should give us maximal possible
    * I2C bus speed - about 444 kHz
    *
-   * for more details, see 20.5.2 in ATmega16/32 secification
+   * for more details, see 20.5.2 in ATmega16/32 specification
    */
   
   TWSR = 0;     /* no prescaler */
