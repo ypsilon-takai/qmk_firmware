@@ -56,7 +56,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifdef VISUALIZER_ENABLE
 #   include "visualizer/visualizer.h"
 #endif
-
+#ifdef SEED_OLED_ENABLE
+#include "SeeedOLED.h"
+#endif
 
 
 #ifdef MATRIX_HAS_GHOST
@@ -184,11 +186,15 @@ MATRIX_LOOP_END:
 #endif
 
 #ifdef SERIAL_LINK_ENABLE
-	serial_link_update();
+    serial_link_update();
 #endif
 
 #ifdef VISUALIZER_ENABLE
     visualizer_update(default_layer_state, layer_state, host_keyboard_leds());
+#endif
+
+#ifdef SEED_OLED_ENABLE
+    oled_update(default_layer_state, layer_state, host_keyboard_leds());
 #endif
 
     // update LED

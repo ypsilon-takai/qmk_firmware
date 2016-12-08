@@ -1,5 +1,7 @@
 #include "ypsilon.h"
 #include "i2cmaster.h"
+#include "SeeedOLED.h"
+
 bool i2c_initialized = 0;
 uint8_t mcp23018_status = 0x20;
 
@@ -24,6 +26,8 @@ void matrix_init_kb(void) {
     ergodox_blink_all_leds();
 
     matrix_init_user();
+
+    oled_init();
 }
 
 void ergodox_blink_all_leds(void)
@@ -41,8 +45,8 @@ void ergodox_blink_all_leds(void)
     ergodox_right_led_2_off();
     _delay_ms(50);
     ergodox_right_led_3_off();
-    //ergodox_led_all_on();
-    //_delay_ms(333);
+    ergodox_led_all_on();
+    _delay_ms(1000);
     ergodox_led_all_off();
 }
 
@@ -81,8 +85,8 @@ out:
     return mcp23018_status;
 }
 
-
-uint8_t init_display () {
+uint8_t init_display (void) {
+    return 0;
 }
 
 #ifdef ONEHAND_ENABLE

@@ -16,7 +16,8 @@
 
 # # project specific files
 SRC = twimaster.c \
-	  matrix.c
+	matrix.c \
+	SeeedOLED.c
 
 # MCU name
 MCU = atmega32u4
