@@ -49,7 +49,6 @@ uint8_t oled_status = 0x20;
 
 uint8_t SeeedOLED_sendCommand(uint8_t command) {
     oled_status = 0x20;
-    i2c_start(SeeedOLED_Address_WRITE);                 if (oled_status) goto out;
     oled_status = i2c_start(SeeedOLED_Address_WRITE);   if (oled_status) goto out;
     oled_status = i2c_write(SeeedOLED_Command_Mode);    if (oled_status) goto out;
     oled_status = i2c_write(command);                   if (oled_status) goto out;
@@ -137,7 +136,7 @@ void SeeedOLED_clearDisplay() {
         {
             for(i=0;i<16;i++)  //clear all columns
             {
-                SeeedOLED_putChar('A');    
+                SeeedOLED_putChar('B');    
             }
         }
     }
@@ -374,6 +373,11 @@ uint32_t prev_layers_state;
 
 uint8_t statLine_buf_5[128];  // layer stack
 uint8_t statLine_buf_6[128];  // keypress stat
+
+uint8_t leyerline_1_buf[128]; // layer line1 buffer
+uint8_t leyerline_2_buf[128]; // layer line2 buffer
+uint8_t modifier_line[128];   // modifier line buffer
+
 uint8_t statLine_buf_7[128];  // LED stat
 
 uint8_t oled_clearLineBuf(uint8_t* buf) {
@@ -403,7 +407,7 @@ uint8_t oled_init(void) {
 
     ret = SeeedOLED_init();
 
-    SeeedOLED_setXY(0, 0);
+    SeeedOLED_setXY(3, 0);
     oled_DispLogo();
 
     oled_clearLineBuf(statLine_buf_5);
@@ -413,6 +417,23 @@ uint8_t oled_init(void) {
     SeeedOLED_setHorizontalScrollProperties(Scroll_Left, 0, 4, Scroll_5Frames);
     
     return ret;
+}
+
+uint8_t layer_set_num(uint8_t num, uint8_t* upper_buf, uint8_t* lower_buf, uint8_t pos) {
+    uint8_t *upper_img;
+    uint8_t *lower_img;
+    if (num == 1) {
+        upper_img = BigNum_1_upper;
+        lower_img = BigNum_1_lower;
+    } else {
+        upper_img = BigNum_2_upper;
+        lower_img = BigNum_2_lower;
+    }
+    
+    memcpy_P(upper_buf + pos, upper_img , 16);
+    memcpy_P(lower_buf + pos, lower_img , 16);
+    
+    return 16;
 }
 
 uint8_t buf_set_num(uint8_t num, uint8_t* buf, uint8_t pos) {
@@ -465,7 +486,7 @@ uint8_t oled_updateDisplay(bool* status_changed) {
         return ret;
     }
 
-    SeeedOLED_setXY(5, 0);
+    SeeedOLED_setXY(0, 0);
     
     ret = i2c_start(SeeedOLED_Address_WRITE);                 // begin I2C communication
     if(ret) goto out;
@@ -494,7 +515,7 @@ out:
 
 // oled update
 // put all data into string(s) and then send it(them) to the display
-uint8_t oled_update(uint32_t default_layer_state, uint32_t layer_state, uint8_t led_status) {
+uint8_t oled_update(uint32_t default_layer_state, uint32_t layer_state, uint8_t keyboard_leds, bool keypressed) {
     bool updated = false;
     bool status_changed[8] = {
         false, false, false, false, false, // line 0 to 4 displays logo
@@ -502,21 +523,27 @@ uint8_t oled_update(uint32_t default_layer_state, uint32_t layer_state, uint8_t 
         false, // line 6
         false // line 7
     };
+    bool layer_status_changed = false;
+    bool modifire_status_changed = false;
 
     // Line 5 == Layer state
     //
     if(layer_state !=  prev_layers_state){
         updated = true;
         status_changed[5] = true;
+        layer_status_changed = true;
 
         oled_clearLineBuf(statLine_buf_5);
+        oled_clearLineBuf(statLine_buf_6);
 
         uint8_t i=0;
         uint8_t idx = 20;        
         for(; i<=2; ++i){
             if (layer_state & (1<<i)) {
-                idx += buf_set_num(i, statLine_buf_5, idx);
-                idx += 4;
+                idx += layer_set_num(i, statLine_buf_5, statLine_buf_6, idx);
+                idx += 8;
+                //idx += buf_set_num(i, statLine_buf_5, idx);
+                //idx += 4;
             }
         }
 
@@ -545,6 +572,7 @@ uint8_t oled_update(uint32_t default_layer_state, uint32_t layer_state, uint8_t 
 
     }
 
+    
     // led and modkey state
     if (prev_keyboard_leds ^ keyboard_leds ||
         prev_keyboard_modifier_keys != keyboard_modifier_keys) {
@@ -584,12 +612,34 @@ uint8_t oled_update(uint32_t default_layer_state, uint32_t layer_state, uint8_t 
         prev_keyboard_leds = keyboard_leds;
     }
 #endif
-    
+
+    // led state
+    if (prev_keyboard_leds ^ keyboard_leds) {
+        updated = true;
+        status_changed[7] = true;
+        modifire_status_changed = true;
+        
+        oled_clearLineBuf(statLine_buf_7);
+        
+        // numlock state
+        if(keyboard_leds & (1<<0)){
+            buf_set_image_P(NumlkImage, 16, statLine_buf_7, 0);
+        }
+        // capslock state
+        if(keyboard_leds & (1<<1)){
+            buf_set_image_P(CaplkImage, 16, statLine_buf_7, 20);
+        }
+        
+        prev_keyboard_leds = keyboard_leds;
+    }
+    if (keypressed) {
+        updated = true;
+    }
     if (updated) {
         // if something is updated, rotate the wheel
-        SeeedOLED_setXY(5, 0);
+        // SeeedOLED_setXY(0, 0);
         //uint8_t rot_buf[8];
-        buf_set_image_P(Rotator[rotator_index>>1], 8, statLine_buf_5, 0);
+        buf_set_image_P(Rotator[rotator_index>>1], 8, statLine_buf_6, 0);
         //buf_set_image_P(Rotator[rotator_index], 8, rot_buf, 0);
         //SeeedOLED_sendDataS(rot_buf, 8);
         rotator_index++;

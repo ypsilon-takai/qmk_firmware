@@ -127,12 +127,14 @@ void keyboard_task(void)
     static uint8_t led_status = 0;
     matrix_row_t matrix_row = 0;
     matrix_row_t matrix_change = 0;
+    bool matrix_changed = false;
 
     matrix_scan();
     for (uint8_t r = 0; r < MATRIX_ROWS; r++) {
         matrix_row = matrix_get_row(r);
         matrix_change = matrix_row ^ matrix_prev[r];
         if (matrix_change) {
+            matrix_changed = true;
 #ifdef MATRIX_HAS_GHOST
             if (has_ghost_in_row(r)) {
                 /* Keep track of whether ghosted status has changed for
@@ -193,15 +195,19 @@ MATRIX_LOOP_END:
     visualizer_update(default_layer_state, layer_state, host_keyboard_leds());
 #endif
 
-#ifdef SEED_OLED_ENABLE
-    oled_update(default_layer_state, layer_state, host_keyboard_leds());
-#endif
 
     // update LED
     if (led_status != host_keyboard_leds()) {
         led_status = host_keyboard_leds();
         keyboard_set_leds(led_status);
     }
+    
+    oled_update(default_layer_state, layer_state, led_status, matrix_changed);
+#ifdef SEED_OLED_ENABLE
+
+#endif
+
+    
 }
 
 void keyboard_set_leds(uint8_t leds)

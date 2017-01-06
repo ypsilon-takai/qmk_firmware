@@ -27,3 +27,4 @@ NKRO_ENABLE      ?= yes # USB Nkey Rollover - if this doesn't work, see here: ht
 MIDI_ENABLE      ?= no  # MIDI controls
 UNICODE_ENABLE   ?= no # Unicode
 ONEHAND_ENABLE   ?= yes # Allow swapping hands of keyboard
+SEED_OLED_ENABLE = yes

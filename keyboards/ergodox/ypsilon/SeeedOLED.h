@@ -36,7 +36,7 @@ uint8_t oled_clearLineBuf(uint8_t* buf);
 uint8_t oled_DispLogo(void);
 
 uint8_t oled_init(void);
-uint8_t oled_update(uint32_t default_layer_state, uint32_t layer_state, uint8_t led_status);
+uint8_t oled_update(uint32_t default_layer_state, uint32_t layer_state, uint8_t led_status, bool keypressed);
 
 // SeeedOLED dimension
 #define SeeedOLED_Max_X                 127 //128 Pixels

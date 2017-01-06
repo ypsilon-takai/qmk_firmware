@@ -85,10 +85,6 @@ out:
     return mcp23018_status;
 }
 
-uint8_t init_display (void) {
-    return 0;
-}
-
 #ifdef ONEHAND_ENABLE
 __attribute__ ((weak))
 // swap-hands action needs a matrix to define the swap
