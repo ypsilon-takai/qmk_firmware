@@ -74,6 +74,8 @@ OPT_DEFS += -DBOOTLOADER_SIZE=512
 
 SLEEP_LED_ENABLE = no
 
+SEEED_OLED_ENABLE = yes
+
 ifndef QUANTUM_DIR
 	include ../../../Makefile
 endif

@@ -136,7 +136,7 @@ void SeeedOLED_clearDisplay() {
         {
             for(i=0;i<16;i++)  //clear all columns
             {
-                SeeedOLED_putChar('B');    
+                SeeedOLED_putChar(' ');    
             }
         }
     }

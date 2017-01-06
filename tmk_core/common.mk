@@ -101,6 +101,11 @@ ifeq ($(strip $(KEYMAP_SECTION_ENABLE)), yes)
     endif
 endif
 
+ifeq ($(strip $(SEEED_OLED_ENABLE)), yes)
+    TMK_COMMON_DEFS += -DSEEED_OLED_ENABLE
+endif
+
+
 # Bootloader address
 ifdef STM32_BOOTLOADER_ADDRESS
     TMK_COMMON_DEFS += -DSTM32_BOOTLOADER_ADDRESS=$(STM32_BOOTLOADER_ADDRESS)
