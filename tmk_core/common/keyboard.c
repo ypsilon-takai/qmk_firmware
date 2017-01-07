@@ -128,13 +128,12 @@ void keyboard_task(void)
     matrix_row_t matrix_row = 0;
     matrix_row_t matrix_change = 0;
     bool matrix_changed = false;
-
     matrix_scan();
     for (uint8_t r = 0; r < MATRIX_ROWS; r++) {
         matrix_row = matrix_get_row(r);
         matrix_change = matrix_row ^ matrix_prev[r];
         if (matrix_change) {
-            matrix_changed = true;
+
 #ifdef MATRIX_HAS_GHOST
             if (has_ghost_in_row(r)) {
                 /* Keep track of whether ghosted status has changed for
@@ -158,6 +157,7 @@ void keyboard_task(void)
                         .time = (timer_read() | 1) /* time should not be 0 */
                     });
                     // record a processed key
+                    matrix_changed = true;
                     matrix_prev[r] ^= ((matrix_row_t)1<<c);
                     // process a key per task call
                     goto MATRIX_LOOP_END;
