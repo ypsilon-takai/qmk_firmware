@@ -36,7 +36,12 @@ uint8_t oled_clearLineBuf(uint8_t* buf);
 uint8_t oled_DispLogo(void);
 
 uint8_t oled_init(void);
-uint8_t oled_update(uint32_t default_layer_state, uint32_t layer_state, uint8_t led_status, bool keypressed);
+uint8_t oled_updateDisplay(uint8_t* linebuf_1, uint8_t* linebuf_2, uint8_t* modbuf);
+
+void update_rotator(uint8_t* line_buf, uint8_t index);
+void set_numlock_image(uint8_t* line_buf);
+void set_capslock_image(uint8_t* line_buf);
+
 
 // SeeedOLED dimension
 #define SeeedOLED_Max_X                 127 //128 Pixels
@@ -115,6 +120,8 @@ uint8_t buf_set_num(uint8_t num, uint8_t* buf, uint8_t pos);
 uint8_t buf_set_char(char c, uint8_t* buf, uint8_t pos);
 uint8_t buf_set_str(uint8_t* str, uint8_t size, uint8_t* buf, uint8_t pos);
 uint8_t buf_set_byte_as_hex(uint8_t c, uint8_t* buf, uint8_t pos);
+
+uint8_t layer_set_num(uint8_t num, uint8_t* upper_buf, uint8_t* lower_buf, uint8_t pos);
 
 /* extern SeeedOLED SeeedOled;  // SeeedOLED object  */
 

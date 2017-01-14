@@ -5,6 +5,18 @@
 bool i2c_initialized = 0;
 uint8_t mcp23018_status = 0x20;
 
+bool is_shift_pressed (void) {
+    return keyboard_report->mods == MOD_BIT(KC_LSFT) || keyboard_report->mods == MOD_BIT(KC_RSFT);
+}
+
+bool is_ctrl_pressed(void) {
+    return keyboard_report->mods == MOD_BIT(KC_LCTL) || keyboard_report->mods == MOD_BIT(KC_RCTL);
+}
+
+bool is_alt_pressed(void) {
+    return keyboard_report->mods == MOD_BIT(KC_LALT) || keyboard_report->mods == MOD_BIT(KC_RALT);
+}
+
 void matrix_init_kb(void) {
    // keyboard LEDs (see "PWM on ports OC1(A|B|C)" in "teensy-2-0.md")
     TCCR1A = 0b10101001;  // set and configure fast PWM
@@ -84,6 +96,99 @@ out:
 
     return mcp23018_status;
 }
+
+// oled update
+int rotator_index;
+uint8_t prev_keyboard_leds;
+uint8_t prev_keyboard_modifier_keys;
+uint8_t prev_keyboard_keys[6];
+uint32_t prev_layers_state;
+
+uint8_t layerline_buf_1[128]; // layer line1 buffer
+uint8_t layerline_buf_2[128]; // layer line2 buffer
+uint8_t modifierline_buf[128];   // modifier line buffer
+
+uint8_t oled_init(void) {
+    uint8_t ret = 0;
+    rotator_index = 0;
+    prev_keyboard_leds = 0;
+    prev_keyboard_modifier_keys = -1;
+    /*
+      for(int i=0; i<16; ++i)
+      prev_layers_state[i] = -1;
+      for(int i=0; i<6; ++i)
+      prev_keyboard_keys[i] = -1;
+    */
+
+    ret = SeeedOLED_init();
+
+    oled_DispLogo();
+
+    oled_clearLineBuf(layerline_buf_1);
+    oled_clearLineBuf(layerline_buf_2);
+    oled_clearLineBuf(modifierline_buf);
+
+    SeeedOLED_setHorizontalScrollProperties(Scroll_Left, 0, 4, Scroll_5Frames);
+    
+    return ret;
+}
+
+uint8_t oled_update(uint32_t default_layer_state, uint32_t layer_state, uint8_t keyboard_leds, bool keypressed) {
+    bool updated = false;
+    
+    // Layer state
+    if(layer_state !=  prev_layers_state){
+        updated = true;
+
+        oled_clearLineBuf(layerline_buf_1);
+        oled_clearLineBuf(layerline_buf_2);
+
+        uint8_t i=0;
+        uint8_t idx = 20;        
+        for(; i<=2; ++i){
+            if (layer_state & (1<<i)) {
+                idx += layer_set_num(i, layerline_buf_1, layerline_buf_2, idx);
+                idx += 8;
+            }
+        }
+
+        // backup prev state
+        prev_layers_state = layer_state;
+    }
+
+    // LED state
+    if (prev_keyboard_leds ^ keyboard_leds) {
+        updated = true;
+        
+        oled_clearLineBuf(modifierline_buf);
+        
+        // numlock state
+        if(keyboard_leds & (1<<0)){
+            set_numlock_image(modifierline_buf);
+        }
+        // capslock state
+        if(keyboard_leds & (1<<1)){
+            set_capslock_image(modifierline_buf);
+        }
+        
+        prev_keyboard_leds = keyboard_leds;
+    }
+
+    // if something is updated, rotate the wheel
+    if (updated || keypressed) {
+        // rotate the wheel
+        update_rotator(layerline_buf_1, rotator_index);
+        rotator_index++;
+        if(rotator_index>=16)
+            rotator_index=0;
+
+        // change display contents
+        oled_updateDisplay(layerline_buf_1, layerline_buf_2, modifierline_buf);
+    }
+  
+    return 0;
+}
+
 
 #ifdef ONEHAND_ENABLE
 __attribute__ ((weak))

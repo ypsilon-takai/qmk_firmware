@@ -364,15 +364,6 @@ void SeeedOLED_setInverseDisplay() {
 
 /* SeeedOLED SeeedOled;  // Preinstantiate Objects */
 
-int rotator_index;
-uint8_t prev_keyboard_leds;
-uint8_t prev_keyboard_modifier_keys;
-uint8_t prev_keyboard_keys[6];
-uint32_t prev_layers_state;
-
-uint8_t layerline_buf_1[128]; // layer line1 buffer
-uint8_t layerline_buf_2[128]; // layer line2 buffer
-uint8_t modifierline_buf[128];   // modifier line buffer
 
 uint8_t oled_clearLineBuf(uint8_t* buf) {
     for(int i=0; i<128; i++){  // clear
@@ -382,40 +373,14 @@ uint8_t oled_clearLineBuf(uint8_t* buf) {
 }
 
 uint8_t oled_DispLogo(void) {
+    SeeedOLED_setXY(3, 0);
     SeeedOLED_drawBitmap((uint8_t*)ErgodoxLogo, ErgodoxLogoSize);
     return 0;
 }
 
-
-uint8_t oled_init(void) {
-    uint8_t ret = 0;
-    rotator_index = 0;
-    prev_keyboard_leds = 0;
-    prev_keyboard_modifier_keys = -1;
-    /*
-    for(int i=0; i<16; ++i)
-        prev_layers_state[i] = -1;
-    for(int i=0; i<6; ++i)
-        prev_keyboard_keys[i] = -1;
-    */
-
-    ret = SeeedOLED_init();
-
-    SeeedOLED_setXY(3, 0);
-    oled_DispLogo();
-
-    oled_clearLineBuf(layerline_buf_1);
-    oled_clearLineBuf(layerline_buf_2);
-    oled_clearLineBuf(modifierline_buf);
-
-    SeeedOLED_setHorizontalScrollProperties(Scroll_Left, 0, 4, Scroll_5Frames);
-    
-    return ret;
-}
-
 uint8_t layer_set_num(uint8_t num, uint8_t* upper_buf, uint8_t* lower_buf, uint8_t pos) {
-    uint8_t *upper_img;
-    uint8_t *lower_img;
+    const static uint8_t *upper_img;
+    const static uint8_t *lower_img;
     if (num == 1) {
         upper_img = BigNum_1_upper;
         lower_img = BigNum_1_lower;
@@ -472,8 +437,7 @@ uint8_t buf_set_byte_as_hex(uint8_t c, uint8_t* buf, uint8_t pos) {
     return retsize;
 }
 
-//uint8_t oled_updateDisplay(bool* status_changed) {
-uint8_t oled_updateDisplay() {    
+uint8_t oled_updateDisplay(uint8_t* linebuf_1, uint8_t* linebuf_2, uint8_t* modbuf) {    
 
     uint8_t ret = 0x20;
 
@@ -486,15 +450,15 @@ uint8_t oled_updateDisplay() {
     if(ret) goto out;
 
     for (uint8_t i = 0; i < 128; i++) {
-        ret = i2c_write(layerline_buf_1[i]);
+        ret = i2c_write(linebuf_1[i]);
         if(ret) goto out;
     }
     for (uint8_t i = 0; i < 128; i++) {
-        ret = i2c_write(layerline_buf_2[i]);
+        ret = i2c_write(linebuf_2[i]);
         if(ret) goto out;
     }
     for (uint8_t i = 0; i < 128; i++) {
-        ret = i2c_write(modifierline_buf[i]);
+        ret = i2c_write(modbuf[i]);
         if(ret) goto out;
     }
 
@@ -503,60 +467,15 @@ out:
     return ret;
 }
 
-// oled update
-uint8_t oled_update(uint32_t default_layer_state, uint32_t layer_state, uint8_t keyboard_leds, bool keypressed) {
-    bool updated = false;
-    
-    // Layer state
-    if(layer_state !=  prev_layers_state){
-        updated = true;
+void update_rotator(uint8_t* line_buf, uint8_t index) {
+    buf_set_image_P(Rotator[index>>1], 8, line_buf, 0);
+}
 
-        oled_clearLineBuf(layerline_buf_1);
-        oled_clearLineBuf(layerline_buf_2);
+void set_numlock_image(uint8_t* line_buf) {
+    buf_set_image_P(NumlkImage, 16, line_buf, 0);
+}
 
-        uint8_t i=0;
-        uint8_t idx = 20;        
-        for(; i<=2; ++i){
-            if (layer_state & (1<<i)) {
-                idx += layer_set_num(i, layerline_buf_1, layerline_buf_2, idx);
-                idx += 8;
-            }
-        }
-
-        // backup prev state
-        prev_layers_state = layer_state;
-    }
-
-    // LED state
-    if (prev_keyboard_leds ^ keyboard_leds) {
-        updated = true;
-        
-        oled_clearLineBuf(modifierline_buf);
-        
-        // numlock state
-        if(keyboard_leds & (1<<0)){
-            buf_set_image_P(NumlkImage, 16, modifierline_buf, 0);
-        }
-        // capslock state
-        if(keyboard_leds & (1<<1)){
-            buf_set_image_P(CaplkImage, 16, modifierline_buf, 20);
-        }
-        
-        prev_keyboard_leds = keyboard_leds;
-    }
-
-    // if something is updated, rotate the wheel
-    if (updated || keypressed) {
-        // rotate the wheel
-        buf_set_image_P(Rotator[rotator_index>>1], 8, layerline_buf_1, 0);
-        rotator_index++;
-        if(rotator_index>=16)
-            rotator_index=0;
-
-        // change display contents
-        oled_updateDisplay();
-    }
-  
-    return 0;
+void set_capslock_image(uint8_t* line_buf) {
+    buf_set_image_P(CaplkImage, 16, line_buf, 20);
 }
 
