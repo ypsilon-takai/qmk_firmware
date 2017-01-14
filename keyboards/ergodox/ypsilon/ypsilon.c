@@ -17,6 +17,10 @@ bool is_alt_pressed(void) {
     return keyboard_report->mods == MOD_BIT(KC_LALT) || keyboard_report->mods == MOD_BIT(KC_RALT);
 }
 
+bool is_gui_pressed(void) {
+    return keyboard_report->mods == MOD_BIT(KC_LGUI) || keyboard_report->mods == MOD_BIT(KC_RGUI);
+}
+
 void matrix_init_kb(void) {
    // keyboard LEDs (see "PWM on ports OC1(A|B|C)" in "teensy-2-0.md")
     TCCR1A = 0b10101001;  // set and configure fast PWM
@@ -112,7 +116,7 @@ uint8_t oled_init(void) {
     uint8_t ret = 0;
     rotator_index = 0;
     prev_keyboard_leds = 0;
-    prev_keyboard_modifier_keys = -1;
+    prev_keyboard_modifier_keys = 0;
     /*
       for(int i=0; i<16; ++i)
       prev_layers_state[i] = -1;
@@ -157,7 +161,8 @@ uint8_t oled_update(uint32_t default_layer_state, uint32_t layer_state, uint8_t 
     }
 
     // LED state
-    if (prev_keyboard_leds ^ keyboard_leds) {
+    if (prev_keyboard_leds ^ keyboard_leds ||
+        prev_keyboard_modifier_keys ^ keyboard_report->mods) {
         updated = true;
         
         oled_clearLineBuf(modifierline_buf);
@@ -170,8 +175,22 @@ uint8_t oled_update(uint32_t default_layer_state, uint32_t layer_state, uint8_t 
         if(keyboard_leds & (1<<1)){
             set_capslock_image(modifierline_buf);
         }
+
+        if(is_shift_pressed()) {
+            set_shift_image(modifierline_buf);
+        }
+        if(is_alt_pressed()) {
+            set_alt_image(modifierline_buf);
+        }
+        if(is_ctrl_pressed()) {
+            set_ctrl_image(modifierline_buf);
+        }
+        if(is_gui_pressed()) {
+            set_gui_image(modifierline_buf);
+        }
         
         prev_keyboard_leds = keyboard_leds;
+        prev_keyboard_modifier_keys = keyboard_report->mods;
     }
 
     // if something is updated, rotate the wheel

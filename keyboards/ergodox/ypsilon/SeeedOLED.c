@@ -471,11 +471,28 @@ void update_rotator(uint8_t* line_buf, uint8_t index) {
     buf_set_image_P(Rotator[index>>1], 8, line_buf, 0);
 }
 
+// numlock
 void set_numlock_image(uint8_t* line_buf) {
     buf_set_image_P(NumlkImage, 16, line_buf, 0);
 }
-
+// capslock
 void set_capslock_image(uint8_t* line_buf) {
     buf_set_image_P(CaplkImage, 16, line_buf, 20);
+}
+// ctrl key
+void set_ctrl_image(uint8_t* line_buf) {
+    buf_set_image_P(CtrlImage, 16, line_buf, 52);
+}
+// shift key
+void set_shift_image(uint8_t* line_buf) {
+    buf_set_image_P(ShiftImage, 16, line_buf, 72);
+}
+// alt key
+void set_alt_image(uint8_t* line_buf) {
+    buf_set_image_P(AltImage, 16, line_buf, 92);
+}
+// gui key
+void set_gui_image(uint8_t* line_buf) {
+    buf_set_image_P(GuiImage, 16, line_buf, 112);
 }
 

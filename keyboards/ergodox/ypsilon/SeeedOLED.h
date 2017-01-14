@@ -41,6 +41,10 @@ uint8_t oled_updateDisplay(uint8_t* linebuf_1, uint8_t* linebuf_2, uint8_t* modb
 void update_rotator(uint8_t* line_buf, uint8_t index);
 void set_numlock_image(uint8_t* line_buf);
 void set_capslock_image(uint8_t* line_buf);
+void set_ctrl_image(uint8_t* line_buf);
+void set_shift_image(uint8_t* line_buf);
+void set_alt_image(uint8_t* line_buf);
+void set_gui_image(uint8_t* line_buf);
 
 
 // SeeedOLED dimension
