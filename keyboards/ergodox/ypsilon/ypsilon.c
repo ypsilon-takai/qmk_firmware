@@ -1,9 +1,14 @@
 #include "ypsilon.h"
 #include "i2cmaster.h"
 #include "SeeedOLED.h"
+#include "timer.h"
 
 bool i2c_initialized = 0;
 uint8_t mcp23018_status = 0x20;
+
+#define DISP_SLEEP 100000
+bool display_on_state;
+uint32_t disp_off_timer = 0;
 
 bool is_shift_pressed (void) {
     return keyboard_report->mods == MOD_BIT(KC_LSFT) || keyboard_report->mods == MOD_BIT(KC_RSFT);
@@ -117,6 +122,9 @@ uint8_t oled_init(void) {
     rotator_index = 0;
     prev_keyboard_leds = 0;
     prev_keyboard_modifier_keys = 0;
+
+    display_on_state = true;
+    disp_off_timer = timer_read32();
     /*
       for(int i=0; i<16; ++i)
       prev_layers_state[i] = -1;
@@ -195,6 +203,10 @@ uint8_t oled_update(uint32_t default_layer_state, uint32_t layer_state, uint8_t 
 
     // if something is updated, rotate the wheel
     if (updated || keypressed) {
+        if (display_on_state == false) {
+            oled_display_on();
+            display_on_state = true;
+        }
         // rotate the wheel
         update_rotator(layerline_buf_1, rotator_index);
         rotator_index++;
@@ -203,8 +215,14 @@ uint8_t oled_update(uint32_t default_layer_state, uint32_t layer_state, uint8_t 
 
         // change display contents
         oled_updateDisplay(layerline_buf_1, layerline_buf_2, modifierline_buf);
-    }
-  
+
+        disp_off_timer = timer_read32();
+    } else {
+        if (TIMER_DIFF_32(timer_read32(), disp_off_timer) > DISP_SLEEP && display_on_state == true) {
+            oled_display_off();
+            display_on_state = false;
+        }
+    }  
     return 0;
 }
 

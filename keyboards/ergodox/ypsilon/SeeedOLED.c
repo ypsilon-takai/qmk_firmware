@@ -363,8 +363,6 @@ void SeeedOLED_setInverseDisplay() {
 
 
 /* SeeedOLED SeeedOled;  // Preinstantiate Objects */
-
-
 uint8_t oled_clearLineBuf(uint8_t* buf) {
     for(int i=0; i<128; i++){  // clear
         buf[i] = 0;
@@ -435,6 +433,14 @@ uint8_t buf_set_byte_as_hex(uint8_t c, uint8_t* buf, uint8_t pos) {
     retsize = buf_set_num(c >> 4, buf, pos);
     retsize += buf_set_num(c & 0x0f, buf, pos + retsize);
     return retsize;
+}
+
+void oled_display_on(void) {
+    SeeedOLED_sendCommand(SeeedOLED_Display_On_Cmd);   //display on
+}
+
+void oled_display_off(void) {
+    SeeedOLED_sendCommand(SeeedOLED_Display_Off_Cmd);   //display off
 }
 
 uint8_t oled_updateDisplay(uint8_t* linebuf_1, uint8_t* linebuf_2, uint8_t* modbuf) {    

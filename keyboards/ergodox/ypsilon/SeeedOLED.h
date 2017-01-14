@@ -38,6 +38,9 @@ uint8_t oled_DispLogo(void);
 uint8_t oled_init(void);
 uint8_t oled_updateDisplay(uint8_t* linebuf_1, uint8_t* linebuf_2, uint8_t* modbuf);
 
+void oled_display_on(void);
+void oled_display_off(void);
+
 void update_rotator(uint8_t* line_buf, uint8_t index);
 void set_numlock_image(uint8_t* line_buf);
 void set_capslock_image(uint8_t* line_buf);
