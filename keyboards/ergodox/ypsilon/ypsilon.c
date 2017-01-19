@@ -10,20 +10,21 @@ uint8_t mcp23018_status = 0x20;
 bool display_on_state;
 uint32_t disp_off_timer = 0;
 
-bool is_shift_pressed (void) {
-    return keyboard_report->mods == MOD_BIT(KC_LSFT) || keyboard_report->mods == MOD_BIT(KC_RSFT);
+bool is_ctrl_pressed(void) {
+    return keyboard_report->mods & MOD_BIT(KC_LCTL) || keyboard_report->mods & MOD_BIT(KC_RCTL);
 }
 
-bool is_ctrl_pressed(void) {
-    return keyboard_report->mods == MOD_BIT(KC_LCTL) || keyboard_report->mods == MOD_BIT(KC_RCTL);
+
+bool is_shift_pressed (void) {
+    return keyboard_report->mods & MOD_BIT(KC_LSFT) || keyboard_report->mods & MOD_BIT(KC_RSFT);
 }
 
 bool is_alt_pressed(void) {
-    return keyboard_report->mods == MOD_BIT(KC_LALT) || keyboard_report->mods == MOD_BIT(KC_RALT);
+    return keyboard_report->mods & MOD_BIT(KC_LALT) || keyboard_report->mods & MOD_BIT(KC_RALT);
 }
 
 bool is_gui_pressed(void) {
-    return keyboard_report->mods == MOD_BIT(KC_LGUI) || keyboard_report->mods == MOD_BIT(KC_RGUI);
+    return keyboard_report->mods & MOD_BIT(KC_LGUI) || keyboard_report->mods & MOD_BIT(KC_RGUI);
 }
 
 void matrix_init_kb(void) {
