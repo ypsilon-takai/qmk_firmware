@@ -393,6 +393,23 @@ uint8_t layer_set_num(uint8_t num, uint8_t* upper_buf, uint8_t* lower_buf, uint8
     return 16;
 }
 
+uint8_t layer_set_num_32(uint8_t num, uint8_t* upper_buf, uint8_t* lower_buf, uint8_t pos) {
+    const static uint8_t *upper_img;
+    const static uint8_t *lower_img;
+    if (num == 1) {
+        upper_img = Icon_Symbol_upper;
+        lower_img = Icon_Symbol_lower;
+    } else {
+        upper_img = Icon_Mouse_upper;
+        lower_img = Icon_Mouse_lower;
+    }
+    
+    memcpy_P(upper_buf + pos, upper_img , 32);
+    memcpy_P(lower_buf + pos, lower_img , 32);
+    
+    return 32;
+}
+
 uint8_t buf_set_num(uint8_t num, uint8_t* buf, uint8_t pos) {
     for (uint8_t i=0; i<8; i++) {
         memcpy(buf + (pos + i), &NumFont[num][i], 1);

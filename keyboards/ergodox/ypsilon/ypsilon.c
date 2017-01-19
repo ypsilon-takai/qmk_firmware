@@ -159,7 +159,7 @@ uint8_t oled_update(uint32_t default_layer_state, uint32_t layer_state, uint8_t 
         uint8_t idx = 20;        
         for(; i<=2; ++i){
             if (layer_state & (1<<i)) {
-                idx += layer_set_num(i, layerline_buf_1, layerline_buf_2, idx);
+                idx += layer_set_num_32(i, layerline_buf_1, layerline_buf_2, idx);
                 idx += 8;
             }
         }

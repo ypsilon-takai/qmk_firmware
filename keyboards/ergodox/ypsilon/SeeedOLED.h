@@ -129,7 +129,8 @@ uint8_t buf_set_str(uint8_t* str, uint8_t size, uint8_t* buf, uint8_t pos);
 uint8_t buf_set_byte_as_hex(uint8_t c, uint8_t* buf, uint8_t pos);
 
 uint8_t layer_set_num(uint8_t num, uint8_t* upper_buf, uint8_t* lower_buf, uint8_t pos);
-
+uint8_t layer_set_num_32(uint8_t num, uint8_t* upper_buf, uint8_t* lower_buf, uint8_t pos);
+    
 /* extern SeeedOLED SeeedOled;  // SeeedOLED object  */
 
 #endif
