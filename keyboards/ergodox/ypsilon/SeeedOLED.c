@@ -69,31 +69,17 @@ out:
     return oled_status;
 }
 
-uint8_t SeeedOLED_sendDataS(uint8_t* data, uint8_t Length) {
+uint8_t SeeedOLED_sendDataS(uint8_t* data, uint8_t length) {
     oled_status = 0x20;
     oled_status = i2c_start(SeeedOLED_Address_WRITE);   if (oled_status) goto out;
     oled_status = i2c_write(SeeedOLED_Data_Mode);       if (oled_status) goto out;
-    for (uint8_t i = 0; i < Length; i++) {
+    for (uint8_t i = 0; i < length; i++) {
         oled_status = i2c_write(data[i]);
         if(oled_status) goto out;
     }
 out:
     i2c_stop(); // End I2C communication
     return oled_status;
-}
-
-uint8_t SeeedOLED_init(void) {
-    
-    SeeedOLED_clearDisplay();
-    
-    if(SeeedOLED_sendCommand(SeeedOLED_Normal_Display_Cmd))  //Set Normal Display (default)
-        return 1;
-
-    SeeedOLED_sendCommand(SeeedOLED_Segment_Normal_Cmd);
-    SeeedOLED_sendCommand(SeeedOLED_Com_Normal_Cmd);
-
-    
-    return 0;
 }
 
 void SeeedOLED_setBrightness(uint8_t Brightness) {
@@ -361,6 +347,11 @@ void SeeedOLED_setInverseDisplay() {
     SeeedOLED_sendCommand(SeeedOLED_Inverse_Display_Cmd);
 }
 
+void SeeedOLED_setDefault(void) {
+    SeeedOLED_sendCommand(SeeedOLED_Normal_Display_Cmd);
+    SeeedOLED_sendCommand(SeeedOLED_Segment_Normal_Cmd);
+    SeeedOLED_sendCommand(SeeedOLED_Com_Normal_Cmd);
+}
 
 /* SeeedOLED SeeedOled;  // Preinstantiate Objects */
 uint8_t oled_clearLineBuf(uint8_t* buf) {
@@ -376,7 +367,7 @@ uint8_t oled_DispLogo(void) {
     return 0;
 }
 
-uint8_t layer_set_num(uint8_t num, uint8_t* upper_buf, uint8_t* lower_buf, uint8_t pos) {
+uint8_t bufset_layer_img(uint8_t num, uint8_t* upper_buf, uint8_t* lower_buf, uint8_t pos) {
     const static uint8_t *upper_img;
     const static uint8_t *lower_img;
     if (num == 1) {
@@ -393,7 +384,7 @@ uint8_t layer_set_num(uint8_t num, uint8_t* upper_buf, uint8_t* lower_buf, uint8
     return 16;
 }
 
-uint8_t layer_set_num_32(uint8_t num, uint8_t* upper_buf, uint8_t* lower_buf, uint8_t pos) {
+uint8_t bufset_layer_img_32(uint8_t num, uint8_t* upper_buf, uint8_t* lower_buf, uint8_t pos) {
     const static uint8_t *upper_img;
     const static uint8_t *lower_img;
     if (num == 1) {
@@ -410,14 +401,14 @@ uint8_t layer_set_num_32(uint8_t num, uint8_t* upper_buf, uint8_t* lower_buf, ui
     return 32;
 }
 
-uint8_t buf_set_num(uint8_t num, uint8_t* buf, uint8_t pos) {
+uint8_t bufset_num(uint8_t num, uint8_t* buf, uint8_t pos) {
     for (uint8_t i=0; i<8; i++) {
         memcpy(buf + (pos + i), &NumFont[num][i], 1);
     }
     return 8;
 }
 
-uint8_t buf_set_char(char c, uint8_t* buf, uint8_t pos) {
+uint8_t bufset_char(char c, uint8_t* buf, uint8_t pos) {
     uint8_t num = c - 'A';
     for (uint8_t i=0; i<8; i++) {
         memcpy(buf + (pos + i), &AlfaFont[num][i], 1);
@@ -425,32 +416,33 @@ uint8_t buf_set_char(char c, uint8_t* buf, uint8_t pos) {
     return 8;
 }
 
-uint8_t buf_set_image(uint8_t* img, uint8_t size, uint8_t* buf, uint8_t pos) {
+uint8_t bufset_image(uint8_t* img, uint8_t size, uint8_t* buf, uint8_t pos) {
     memcpy(buf + pos, img, size);
     return 0;
 }
 
-uint8_t buf_set_image_P(const uint8_t* flash_img, uint8_t size, uint8_t* buf, uint8_t pos) {
+uint8_t bufset_image_P(const uint8_t* flash_img, uint8_t size, uint8_t* buf, uint8_t pos) {
     memcpy_P(buf + pos, flash_img, size);
     return 0;
 }
 
-uint8_t buf_set_str(uint8_t* str, uint8_t size, uint8_t* buf, uint8_t pos) {
+uint8_t bufset_str(uint8_t* str, uint8_t size, uint8_t* buf, uint8_t pos) {
     uint8_t retsize = 0;
     for(uint8_t i=0; i<size; i++) {
-        uint8_t ret = buf_set_char(str[i], buf, pos + i);
+        uint8_t ret = bufset_char(str[i], buf, pos + i);
         if (ret == 0) return 0;
         retsize += ret;
     }
     return retsize;
 }
 
-uint8_t buf_set_byte_as_hex(uint8_t c, uint8_t* buf, uint8_t pos) {
+uint8_t bufset_byte_as_hex(uint8_t c, uint8_t* buf, uint8_t pos) {
     uint8_t retsize = 0;
-    retsize = buf_set_num(c >> 4, buf, pos);
-    retsize += buf_set_num(c & 0x0f, buf, pos + retsize);
+    retsize = bufset_num(c >> 4, buf, pos);
+    retsize += bufset_num(c & 0x0f, buf, pos + retsize);
     return retsize;
 }
+
 
 void oled_display_on(void) {
     SeeedOLED_sendCommand(SeeedOLED_Display_On_Cmd);   //display on
@@ -491,31 +483,31 @@ out:
 }
 
 void update_rotator(uint8_t* line_buf, uint8_t index) {
-    buf_set_image_P(Rotator[index>>1], 8, line_buf, 0);
+    bufset_image_P(Rotator[index>>1], 8, line_buf, 0);
 }
 
 // numlock
 void set_numlock_image(uint8_t* line_buf) {
-    buf_set_image_P(NumlkImage, 16, line_buf, 0);
+    bufset_image_P(NumlkImage, 16, line_buf, 0);
 }
 // capslock
 void set_capslock_image(uint8_t* line_buf) {
-    buf_set_image_P(CaplkImage, 16, line_buf, 20);
-}
-// ctrl key
-void set_ctrl_image(uint8_t* line_buf) {
-    buf_set_image_P(CtrlImage, 16, line_buf, 52);
+    bufset_image_P(CaplkImage, 16, line_buf, 20);
 }
 // shift key
 void set_shift_image(uint8_t* line_buf) {
-    buf_set_image_P(ShiftImage, 16, line_buf, 72);
+    bufset_image_P(ShiftImage, 16, line_buf, 52);
+}
+// ctrl key
+void set_ctrl_image(uint8_t* line_buf) {
+    bufset_image_P(CtrlImage, 16, line_buf, 72);
 }
 // alt key
 void set_alt_image(uint8_t* line_buf) {
-    buf_set_image_P(AltImage, 16, line_buf, 92);
+    bufset_image_P(AltImage, 16, line_buf, 92);
 }
 // gui key
 void set_gui_image(uint8_t* line_buf) {
-    buf_set_image_P(GuiImage, 16, line_buf, 112);
+    bufset_image_P(GuiImage, 16, line_buf, 112);
 }
 

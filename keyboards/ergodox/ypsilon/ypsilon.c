@@ -120,28 +120,25 @@ uint8_t modifierline_buf[128];   // modifier line buffer
 
 uint8_t oled_init(void) {
     uint8_t ret = 0;
+
+    // led states
     rotator_index = 0;
     prev_keyboard_leds = 0;
     prev_keyboard_modifier_keys = 0;
 
+    // screen saver
     display_on_state = true;
     disp_off_timer = timer_read32();
-    /*
-      for(int i=0; i<16; ++i)
-      prev_layers_state[i] = -1;
-      for(int i=0; i<6; ++i)
-      prev_keyboard_keys[i] = -1;
-    */
 
-    ret = SeeedOLED_init();
-
+    // display initial setup
+    SeeedOLED_clearDisplay();
+    SeeedOLED_setDefault();
     oled_DispLogo();
-
+    //SeeedOLED_setHorizontalScrollProperties(Scroll_Left, 0, 4, Scroll_5Frames);
+    
     oled_clearLineBuf(layerline_buf_1);
     oled_clearLineBuf(layerline_buf_2);
     oled_clearLineBuf(modifierline_buf);
-
-    SeeedOLED_setHorizontalScrollProperties(Scroll_Left, 0, 4, Scroll_5Frames);
     
     return ret;
 }
@@ -160,7 +157,7 @@ uint8_t oled_update(uint32_t default_layer_state, uint32_t layer_state, uint8_t 
         uint8_t idx = 20;        
         for(; i<=2; ++i){
             if (layer_state & (1<<i)) {
-                idx += layer_set_num_32(i, layerline_buf_1, layerline_buf_2, idx);
+                idx += bufset_layer_img_32(i, layerline_buf_1, layerline_buf_2, idx);
                 idx += 8;
             }
         }
@@ -188,11 +185,11 @@ uint8_t oled_update(uint32_t default_layer_state, uint32_t layer_state, uint8_t 
         if(is_shift_pressed()) {
             set_shift_image(modifierline_buf);
         }
-        if(is_alt_pressed()) {
-            set_alt_image(modifierline_buf);
-        }
         if(is_ctrl_pressed()) {
             set_ctrl_image(modifierline_buf);
+        }
+        if(is_alt_pressed()) {
+            set_alt_image(modifierline_buf);
         }
         if(is_gui_pressed()) {
             set_gui_image(modifierline_buf);

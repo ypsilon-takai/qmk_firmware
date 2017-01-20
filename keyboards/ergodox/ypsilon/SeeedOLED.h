@@ -89,7 +89,7 @@ void set_gui_image(uint8_t* line_buf);
 #define Scroll_128Frames        0x2
 #define Scroll_256Frames        0x3
 
-uint8_t SeeedOLED_init(void);
+void SeeedOLED_setDefault(void);
 
 void SeeedOLED_setNormalDisplay(void);
 void SeeedOLED_setInverseDisplay(void);
@@ -123,14 +123,22 @@ void SeeedOLED_activateScroll(void);
 void SeeedOLED_deactivateScroll(void);
 
 // buffer support functions for seeed oled
-uint8_t buf_set_num(uint8_t num, uint8_t* buf, uint8_t pos);
-uint8_t buf_set_char(char c, uint8_t* buf, uint8_t pos);
-uint8_t buf_set_str(uint8_t* str, uint8_t size, uint8_t* buf, uint8_t pos);
-uint8_t buf_set_byte_as_hex(uint8_t c, uint8_t* buf, uint8_t pos);
-
-uint8_t layer_set_num(uint8_t num, uint8_t* upper_buf, uint8_t* lower_buf, uint8_t pos);
-uint8_t layer_set_num_32(uint8_t num, uint8_t* upper_buf, uint8_t* lower_buf, uint8_t pos);
+uint8_t bufset_layer_img(uint8_t num, uint8_t* upper_buf, uint8_t* lower_buf, uint8_t pos);
+uint8_t bufset_layer_img_32(uint8_t num, uint8_t* upper_buf, uint8_t* lower_buf, uint8_t pos);
     
+uint8_t bufset_num(uint8_t num, uint8_t* buf, uint8_t pos);
+uint8_t bufset_char(char c, uint8_t* buf, uint8_t pos);
+uint8_t bufset_str(uint8_t* str, uint8_t size, uint8_t* buf, uint8_t pos);
+uint8_t bufset_image(uint8_t* img, uint8_t size, uint8_t* buf, uint8_t pos);
+uint8_t bufset_image_P(const uint8_t* flash_img, uint8_t size, uint8_t* buf, uint8_t pos);
+uint8_t bufset_byte_as_hex(uint8_t c, uint8_t* buf, uint8_t pos);
+
+void oled_display_on(void);
+void oled_display_off(void);
+
+uint8_t oled_updateDisplay(uint8_t* linebuf_1, uint8_t* linebuf_2, uint8_t* modbuf);
+
+
 /* extern SeeedOLED SeeedOled;  // SeeedOLED object  */
 
 #endif
