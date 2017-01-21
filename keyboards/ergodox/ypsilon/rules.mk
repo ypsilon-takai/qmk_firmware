@@ -16,7 +16,8 @@
 
 # # project specific files
 SRC = twimaster.c \
-	  matrix.c
+	matrix.c \
+	SeeedOLED.c
 
 # MCU name
 MCU = atmega32u4
@@ -57,7 +58,6 @@ F_USB = $(F_CPU)
 # Interrupt driven control endpoint task(+60)
 OPT_DEFS += -DINTERRUPT_CONTROL_ENDPOINT
 
-
 # Boot Section Size in *bytes*
 #   Teensy halfKay   512
 #   Teensy++ halfKay 1024
@@ -66,12 +66,10 @@ OPT_DEFS += -DINTERRUPT_CONTROL_ENDPOINT
 #   USBaspLoader     2048
 OPT_DEFS += -DBOOTLOADER_SIZE=512
 
-
-# Build Options
-#   comment out to disable the options.
-#
-
 SLEEP_LED_ENABLE = no
+
+SEEED_OLED_ENABLE = yes
+
 
 ifndef QUANTUM_DIR
 	include ../../../Makefile

@@ -33,7 +33,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "debug.h"
 #include "util.h"
 #include "matrix.h"
-#include "ez.h"
+#include "ypsilon.h"
 #include "i2cmaster.h"
 #ifdef DEBUG_MATRIX_SCAN_RATE
 #include  "timer.h"
@@ -51,7 +51,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #ifndef DEBOUNCE
-#   define DEBOUNCE	5
+#   define DEBOUNCE	3
 #endif
 static uint8_t debouncing = DEBOUNCE;
 
@@ -105,7 +105,6 @@ void matrix_init(void)
     // initialize row and col
 
     mcp23018_status = init_mcp23018();
-
 
     unselect_rows();
     init_cols();
@@ -163,7 +162,7 @@ uint8_t matrix_scan(void)
 
 #ifdef DEBUG_MATRIX_SCAN_RATE
     matrix_scan_count++;
-
+ 
     uint32_t timer_now = timer_read32();
     if (TIMER_DIFF_32(timer_now, matrix_timer)>1000) {
         print("matrix scan frequency: ");

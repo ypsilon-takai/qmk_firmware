@@ -20,7 +20,7 @@
 #define LOCKING_RESYNC_ENABLE
 
 /* key combination for command */
-#define IS_COMMAND() ( \
+#define IS_COMMAND() (                                              \
     keyboard_report->mods == (MOD_BIT(KC_LCTL) | MOD_BIT(KC_RCTL)) || \
     keyboard_report->mods == (MOD_BIT(KC_LSFT) | MOD_BIT(KC_RSFT)) \
 )
@@ -32,7 +32,7 @@
     #include "infinity/config.h"
 #endif
 #ifdef SUBPROJECT_ypsilon
-#include "ypsilon/config.h"
+    #include "ypsilon/config.h"
 #endif
 
 

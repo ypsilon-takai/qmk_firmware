@@ -56,7 +56,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifdef VISUALIZER_ENABLE
 #   include "visualizer/visualizer.h"
 #endif
-
+#ifdef SEED_OLED_ENABLE
+#include "SeeedOLED.h"
+#endif
 
 
 #ifdef MATRIX_HAS_GHOST
@@ -125,12 +127,13 @@ void keyboard_task(void)
     static uint8_t led_status = 0;
     matrix_row_t matrix_row = 0;
     matrix_row_t matrix_change = 0;
-
+    bool matrix_changed = false;
     matrix_scan();
     for (uint8_t r = 0; r < MATRIX_ROWS; r++) {
         matrix_row = matrix_get_row(r);
         matrix_change = matrix_row ^ matrix_prev[r];
         if (matrix_change) {
+
 #ifdef MATRIX_HAS_GHOST
             if (has_ghost_in_row(r)) {
                 /* Keep track of whether ghosted status has changed for
@@ -154,6 +157,7 @@ void keyboard_task(void)
                         .time = (timer_read() | 1) /* time should not be 0 */
                     });
                     // record a processed key
+                    matrix_changed = true;
                     matrix_prev[r] ^= ((matrix_row_t)1<<c);
                     // process a key per task call
                     goto MATRIX_LOOP_END;
@@ -184,11 +188,15 @@ MATRIX_LOOP_END:
 #endif
 
 #ifdef SERIAL_LINK_ENABLE
-	serial_link_update();
+    serial_link_update();
 #endif
 
 #ifdef VISUALIZER_ENABLE
     visualizer_update(default_layer_state, layer_state, host_keyboard_leds());
+#endif
+
+#ifdef SEEED_OLED_ENABLE
+    oled_update(default_layer_state, layer_state, led_status, matrix_changed);
 #endif
 
     // update LED

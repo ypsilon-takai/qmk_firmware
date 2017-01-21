@@ -12,6 +12,7 @@
 *.sym
 *.swp
 tags
+TAGS
 *~
 build/
 .build/

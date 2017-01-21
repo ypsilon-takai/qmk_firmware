@@ -1,5 +1,10 @@
 #include "ypsilon.h"
 #include "i2cmaster.h"
+#include "timer.h"
+#ifdef SEEED_OLED_ENABLE
+#    include "SeeedOLED.h"
+#endif
+
 bool i2c_initialized = 0;
 uint8_t mcp23018_status = 0x20;
 
@@ -24,6 +29,10 @@ void matrix_init_kb(void) {
     ergodox_blink_all_leds();
 
     matrix_init_user();
+
+#ifdef SEEED_OLED_ENABLE
+    oled_init();
+#endif
 }
 
 void ergodox_blink_all_leds(void)
@@ -41,8 +50,8 @@ void ergodox_blink_all_leds(void)
     ergodox_right_led_2_off();
     _delay_ms(50);
     ergodox_right_led_3_off();
-    //ergodox_led_all_on();
-    //_delay_ms(333);
+    ergodox_led_all_on();
+    _delay_ms(1000);
     ergodox_led_all_off();
 }
 
@@ -82,8 +91,146 @@ out:
 }
 
 
-uint8_t init_display () {
+#ifdef SEEED_OLED_ENABLE
+
+#define DISP_SLEEP 100000
+bool display_on_state;
+uint32_t disp_off_timer = 0;
+
+bool is_ctrl_pressed(void) {
+    return keyboard_report->mods & MOD_BIT(KC_LCTL) || keyboard_report->mods & MOD_BIT(KC_RCTL);
 }
+
+bool is_shift_pressed (void) {
+    return keyboard_report->mods & MOD_BIT(KC_LSFT) || keyboard_report->mods & MOD_BIT(KC_RSFT);
+}
+
+bool is_alt_pressed(void) {
+    return keyboard_report->mods & MOD_BIT(KC_LALT) || keyboard_report->mods & MOD_BIT(KC_RALT);
+}
+
+bool is_gui_pressed(void) {
+    return keyboard_report->mods & MOD_BIT(KC_LGUI) || keyboard_report->mods & MOD_BIT(KC_RGUI);
+}
+
+// oled update
+int rotator_index;
+uint8_t prev_keyboard_leds;
+uint8_t prev_keyboard_modifier_keys;
+uint8_t prev_keyboard_keys[6];
+uint32_t prev_layers_state;
+
+uint8_t layerline_buf_1[128]; // layer line1 buffer
+uint8_t layerline_buf_2[128]; // layer line2 buffer
+uint8_t modifierline_buf[128];   // modifier line buffer
+
+uint8_t oled_init(void) {
+    uint8_t ret = 0;
+
+    // led states
+    rotator_index = 0;
+    prev_keyboard_leds = 0;
+    prev_keyboard_modifier_keys = 0;
+
+    // screen saver
+    display_on_state = true;
+    disp_off_timer = timer_read32();
+
+    // display initial setup
+    SeeedOLED_clearDisplay();
+    SeeedOLED_setDefault();
+    oled_DispLogo();
+    //SeeedOLED_setHorizontalScrollProperties(Scroll_Left, 0, 4, Scroll_5Frames);
+    
+    oled_clearLineBuf(layerline_buf_1);
+    oled_clearLineBuf(layerline_buf_2);
+    oled_clearLineBuf(modifierline_buf);
+    
+    return ret;
+}
+
+uint8_t oled_update(uint32_t default_layer_state, uint32_t layer_state, uint8_t keyboard_leds, bool keypressed) {
+    bool updated = false;
+    
+    // Layer state
+    if(layer_state !=  prev_layers_state){
+        updated = true;
+
+        oled_clearLineBuf(layerline_buf_1);
+        oled_clearLineBuf(layerline_buf_2);
+
+        uint8_t i=0;
+        uint8_t idx = 20;        
+        for(; i<=2; ++i){
+            if (layer_state & (1<<i)) {
+                idx += bufset_layer_img_32(i, layerline_buf_1, layerline_buf_2, idx);
+                idx += 8;
+            }
+        }
+
+        // backup prev state
+        prev_layers_state = layer_state;
+    }
+
+    // LED state
+    if (prev_keyboard_leds ^ keyboard_leds ||
+        prev_keyboard_modifier_keys ^ keyboard_report->mods) {
+        updated = true;
+        
+        oled_clearLineBuf(modifierline_buf);
+        
+        // numlock state
+        if(keyboard_leds & (1<<0)){
+            set_numlock_image(modifierline_buf);
+        }
+        // capslock state
+        if(keyboard_leds & (1<<1)){
+            set_capslock_image(modifierline_buf);
+        }
+
+        if(is_shift_pressed()) {
+            set_shift_image(modifierline_buf);
+        }
+        if(is_ctrl_pressed()) {
+            set_ctrl_image(modifierline_buf);
+        }
+        if(is_alt_pressed()) {
+            set_alt_image(modifierline_buf);
+        }
+        if(is_gui_pressed()) {
+            set_gui_image(modifierline_buf);
+        }
+        
+        prev_keyboard_leds = keyboard_leds;
+        prev_keyboard_modifier_keys = keyboard_report->mods;
+    }
+
+    // if something is updated, rotate the wheel
+    if (updated || keypressed) {
+        if (display_on_state == false) {
+            oled_display_on();
+            display_on_state = true;
+        }
+        // rotate the wheel
+        update_rotator(layerline_buf_1, rotator_index);
+        rotator_index++;
+        if(rotator_index>=16)
+            rotator_index=0;
+
+        // change display contents
+        oled_updateDisplay(layerline_buf_1, layerline_buf_2, modifierline_buf);
+
+        disp_off_timer = timer_read32();
+    } else {
+        if (TIMER_DIFF_32(timer_read32(), disp_off_timer) > DISP_SLEEP && display_on_state == true) {
+            oled_display_off();
+            display_on_state = false;
+        }
+    }  
+    return 0;
+}
+#endif
+// SEEED_OLED_ENABLE
 
 #ifdef ONEHAND_ENABLE
 __attribute__ ((weak))
