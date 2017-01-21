@@ -1,31 +1,12 @@
 #include "ypsilon.h"
 #include "i2cmaster.h"
-#include "SeeedOLED.h"
 #include "timer.h"
+#ifdef SEEED_OLED_ENABLE
+#    include "SeeedOLED.h"
+#endif
 
 bool i2c_initialized = 0;
 uint8_t mcp23018_status = 0x20;
-
-#define DISP_SLEEP 100000
-bool display_on_state;
-uint32_t disp_off_timer = 0;
-
-bool is_ctrl_pressed(void) {
-    return keyboard_report->mods & MOD_BIT(KC_LCTL) || keyboard_report->mods & MOD_BIT(KC_RCTL);
-}
-
-
-bool is_shift_pressed (void) {
-    return keyboard_report->mods & MOD_BIT(KC_LSFT) || keyboard_report->mods & MOD_BIT(KC_RSFT);
-}
-
-bool is_alt_pressed(void) {
-    return keyboard_report->mods & MOD_BIT(KC_LALT) || keyboard_report->mods & MOD_BIT(KC_RALT);
-}
-
-bool is_gui_pressed(void) {
-    return keyboard_report->mods & MOD_BIT(KC_LGUI) || keyboard_report->mods & MOD_BIT(KC_RGUI);
-}
 
 void matrix_init_kb(void) {
    // keyboard LEDs (see "PWM on ports OC1(A|B|C)" in "teensy-2-0.md")
@@ -49,7 +30,9 @@ void matrix_init_kb(void) {
 
     matrix_init_user();
 
+#ifdef SEEED_OLED_ENABLE
     oled_init();
+#endif
 }
 
 void ergodox_blink_all_leds(void)
@@ -105,6 +88,29 @@ out:
     i2c_stop();
 
     return mcp23018_status;
+}
+
+
+#ifdef SEEED_OLED_ENABLE
+
+#define DISP_SLEEP 100000
+bool display_on_state;
+uint32_t disp_off_timer = 0;
+
+bool is_ctrl_pressed(void) {
+    return keyboard_report->mods & MOD_BIT(KC_LCTL) || keyboard_report->mods & MOD_BIT(KC_RCTL);
+}
+
+bool is_shift_pressed (void) {
+    return keyboard_report->mods & MOD_BIT(KC_LSFT) || keyboard_report->mods & MOD_BIT(KC_RSFT);
+}
+
+bool is_alt_pressed(void) {
+    return keyboard_report->mods & MOD_BIT(KC_LALT) || keyboard_report->mods & MOD_BIT(KC_RALT);
+}
+
+bool is_gui_pressed(void) {
+    return keyboard_report->mods & MOD_BIT(KC_LGUI) || keyboard_report->mods & MOD_BIT(KC_RGUI);
 }
 
 // oled update
@@ -223,7 +229,8 @@ uint8_t oled_update(uint32_t default_layer_state, uint32_t layer_state, uint8_t 
     }  
     return 0;
 }
-
+#endif
+// SEEED_OLED_ENABLE
 
 #ifdef ONEHAND_ENABLE
 __attribute__ ((weak))

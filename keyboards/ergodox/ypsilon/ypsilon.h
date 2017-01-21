@@ -32,11 +32,17 @@ void ergodox_blink_all_leds(void);
 uint8_t init_mcp23018(void);
 uint8_t ergodox_left_leds_update(void);
 
+#ifdef SEEED_OLED_ENABLE
+
 bool is_shift_pressed(void);
 bool is_ctrl_pressed(void);
 bool is_alt_pressed(void);
+bool is_gui_pressed(void);
 
+uint8_t oled_init(void);    
 uint8_t oled_update(uint32_t default_layer_state, uint32_t layer_state, uint8_t led_status, bool keypressed);
+#endif 
+// SEEED_OLED_ENABLE
 
 inline void ergodox_board_led_on(void)      { DDRD |=  (1<<6); PORTD |=  (1<<6); }
 inline void ergodox_right_led_1_on(void)    { DDRB |=  (1<<5); PORTB |=  (1<<5); }
