@@ -56,8 +56,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifdef VISUALIZER_ENABLE
 #   include "visualizer/visualizer.h"
 #endif
-#ifdef SEED_OLED_ENABLE
-#include "SeeedOLED.h"
+#ifdef SEEED_OLED_ENABLE
+#   include "ypsilon.h"
 #endif
 
 
