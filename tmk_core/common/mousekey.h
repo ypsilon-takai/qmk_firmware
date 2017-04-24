@@ -39,18 +39,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define MOUSEKEY_INTERVAL 50
 #endif
 #ifndef MOUSEKEY_MAX_SPEED
-#define MOUSEKEY_MAX_SPEED 10
+#define MOUSEKEY_MAX_SPEED 6
+//#define MOUSEKEY_MAX_SPEED 10
 #endif
 #ifndef MOUSEKEY_TIME_TO_MAX
 #define MOUSEKEY_TIME_TO_MAX 20
 #endif
 #ifndef MOUSEKEY_WHEEL_MAX_SPEED
-#define MOUSEKEY_WHEEL_MAX_SPEED 8
+#define MOUSEKEY_WHEEL_MAX_SPEED 5
+//#define MOUSEKEY_WHEEL_MAX_SPEED 8
 #endif
 #ifndef MOUSEKEY_WHEEL_TIME_TO_MAX
 #define MOUSEKEY_WHEEL_TIME_TO_MAX 40
 #endif
-
 
 #ifdef __cplusplus
 extern "C" {
