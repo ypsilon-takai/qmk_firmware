@@ -39,16 +39,16 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
                    KC_GRV,   KC_LANG1,         KC_LEFT, KC_RGHT,
                                                       KC_LCTL, KC_LALT,
                                                                KC_LGUI,
-                                               KC_SPC,KC_BSPC, KC_DELT,
+                                         SFT_T(KC_SPC),KC_BSPC, KC_DELT,
         // right hand
-             KC_DELT,     KC_6,   KC_7,   KC_8,   KC_9,   KC_0,             KC_BSLS,  TG(SYMB),
-             MO(SYMB),    KC_F,   KC_G,   KC_C,   KC_R,   KC_L,             KC_SLSH,  TG(MDIA),
-                          KC_D,   KC_H,   KC_T,   KC_N,   LT(MDIA, KC_S),   KC_MINS,  KC_NO,
-             MO(MDIA),    KC_B,   KC_M,   KC_W,   KC_V,   CTL_T(KC_Z),      KC_RSFT,
+             KC_DELT,     KC_6,   KC_7,   KC_8,   KC_9,   KC_0,   KC_BSLS,  TG(SYMB),
+             MO(SYMB),    KC_F,   KC_G,   KC_C,   KC_R,   KC_L,   KC_SLSH,  TG(MDIA),
+                          KC_D,   KC_H,   KC_T,   KC_N,   KC_S,   KC_MINS,  KC_NO,
+             MO(MDIA),    KC_B,   KC_M,   KC_W,   KC_V,   KC_Z,   KC_RSFT,
                                   KC_UP,  KC_DOWN,KC_LBRC,KC_RBRC,
              KC_RCTL, KC_RALT,
              KC_RGUI,
-             KC_INS,KC_ENT, KC_SPC
+             KC_INS,KC_ENT, SFT_T(KC_SPC)
     ),
 /* Keymap 1: Symbol Layer
  *
