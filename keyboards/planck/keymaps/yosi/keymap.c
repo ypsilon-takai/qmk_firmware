@@ -36,6 +36,7 @@ enum planck_keycodes {
 // Fillers to make layering more clear
 #define _______ KC_TRNS
 #define XXXXXXX KC_NO
+#define __XXX__ KC_NO
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
@@ -72,7 +73,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     {KC_QUOT, KC_COMM, KC_DOT,  KC_P,    KC_Y,    KC_DEL,  KC_BSPC, KC_F,    KC_G,    KC_C,    KC_R,    KC_L},
     {KC_A,    KC_O,    KC_E,    KC_U,    KC_I,    KC_TAB,  KC_ENT,  KC_D,    KC_H,    KC_T,    KC_N,    KC_S},
     {KC_SCLN, KC_Q,    KC_J,    KC_K,    KC_X,    SFT_T(KC_EQL),  SFT_T(KC_MINS), KC_B,    KC_M,    KC_W,    KC_V,    KC_Z},
-    {KC_GRV,  KC_LGUI, KC_LALT, LSFT_T(KC_SPC), KC_LCTL, RAISE, LOWER, KC_RALT, RSFT_T(KC_SPC), KC_RCTL, KC_BSLS, KC_MINS}
+    {KC_GRV,  KC_LGUI, KC_LALT, LSFT_T(KC_SPC), KC_LCTL, RAISE, LOWER, KC_RALT, RSFT_T(KC_SPC), KC_RCTL, KC_BSLS, KC_SLSH}
 },
 
 /* Lower
@@ -87,9 +88,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * `-----------------------------------------------------------------------------------'
  */
 [_LOWER] = {
-    {KC_EXLM, KC_AT,   KC_HASH, KC_DLR,  KC_PERC, KC_INS,  KC_BSPC, KC_CIRC, KC_AMPR, KC_ASTR, KC_LPRN, KC_RPRN},
-    {KC_ESC,  _______, KC_LBRC, KC_RBRC, _______, _______, KC_ENT,  _______, KC_LEFT, KC_UP,   KC_RIGHT,KC_UNDS},
-    {_______, _______, KC_LCBR, KC_RCBR, _______, KC_EQL,  KC_MINS, _______, _______, KC_DOWN, _______, _______, },
+    {KC_EXLM, KC_AT,   KC_HASH, KC_DLR,  KC_PERC, KC_INS,  KC_BSPC, KC_CIRC, KC_AMPR, KC_ASTR, KC_LPRN,  KC_RPRN},
+    {KC_ESC,  __XXX__, KC_LBRC, KC_RBRC, __XXX__, __XXX__, KC_ENT,  __XXX__, KC_LEFT, KC_UP,   KC_RIGHT, KC_UNDS},
+    {__XXX__, __XXX__, KC_LCBR, KC_RCBR, __XXX__, KC_EQL,  KC_MINS, __XXX__, __XXX__, KC_DOWN, __XXX__,  KC_QUES},
     {KC_GRV,  KC_LSFT, KC_LALT, KC_LCTL, SFT_T(KC_SPC), RAISE, LOWER, SFT_T(KC_SPC), KC_RALT, KC_RCTL, KC_RSFT, KC_SLSH}
 },
 
@@ -123,10 +124,10 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * `-----------------------------------------------------------------------------------'
  */
 [_ADJUST] = {
-  {_______, RESET,   _______, _______, _______, _______, _______, _______, _______, _______, _______, KC_DEL},
-  {_______, _______, _______, AU_ON,   AU_OFF,  AG_NORM, AG_SWAP, QWERTY,  _______, DVORAK,  _______, _______},
-  {_______, MUV_DE,  MUV_IN,  MU_ON,   MU_OFF,  MI_ON,   MI_OFF,  _______, _______, _______, _______, _______},
-  {_______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______}
+  {__XXX__, RESET,   __XXX__, __XXX__, __XXX__, __XXX__, __XXX__, __XXX__, __XXX__, __XXX__, __XXX__, KC_DEL},
+  {__XXX__, __XXX__, __XXX__, AU_ON,   AU_OFF,  AG_NORM, AG_SWAP, QWERTY,  __XXX__, DVORAK,  __XXX__, __XXX__},
+  {__XXX__, MUV_DE,  MUV_IN,  MU_ON,   MU_OFF,  MI_ON,   MI_OFF,  __XXX__, __XXX__, __XXX__, __XXX__, __XXX__},
+  {__XXX__, __XXX__, __XXX__, __XXX__, __XXX__, __XXX__, __XXX__, __XXX__, __XXX__, __XXX__, __XXX__, __XXX__}
 }
 
 
