@@ -55,7 +55,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   {KC_TAB,  KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,    KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,    KC_BSPC},
   {KC_ESC,  KC_A,    KC_S,    KC_D,    KC_F,    KC_G,    KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, KC_QUOT},
   {KC_LSFT, KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,    KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH, KC_ENT },
-  {BACKLIT, KC_LCTL, KC_LALT, KC_LGUI, LOWER,   KC_SPC,  KC_SPC,  RAISE,   KC_LEFT, KC_DOWN, KC_UP,   KC_RGHT}
+  {KC_GRV, KC_LCTL, KC_LALT, KC_LGUI,  KC_LCTL, RAISE, LOWER, KC_RALT,  KC_LEFT, KC_DOWN, KC_UP,   KC_RGHT}
 },
 
 /* Dvorak
@@ -89,8 +89,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  */
 [_LOWER] = {
     {KC_EXLM, KC_AT,   KC_HASH, KC_DLR,  KC_PERC, KC_INS,  KC_BSPC, KC_CIRC, KC_AMPR, KC_ASTR, KC_LPRN,  KC_RPRN},
-    {KC_ESC,  __XXX__, KC_LBRC, KC_RBRC, __XXX__, __XXX__, KC_ENT,  __XXX__, KC_LEFT, KC_UP,   KC_RIGHT, KC_UNDS},
-    {__XXX__, __XXX__, KC_LCBR, KC_RCBR, __XXX__, KC_EQL,  KC_MINS, __XXX__, __XXX__, KC_DOWN, __XXX__,  KC_QUES},
+    {KC_ESC,  __XXX__, KC_LBRC, KC_RBRC, __XXX__, __XXX__, KC_ENT,  __XXX__, KC_LEFT, KC_UP,   KC_RGHT, KC_UNDS},
+    {__XXX__, __XXX__, KC_LCBR, KC_RCBR, __XXX__, KC_EQL,  KC_MINS, __XXX__, KC_LEFT, KC_DOWN, KC_RGHT,  KC_QUES},
     {KC_GRV,  KC_LSFT, KC_LALT, KC_LCTL, SFT_T(KC_SPC), RAISE, LOWER, SFT_T(KC_SPC), KC_RALT, KC_RCTL, KC_RSFT, KC_SLSH}
 },
 
@@ -106,10 +106,10 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * `-----------------------------------------------------------------------------------'
  */
 [_RAISE] = {
-  {KC_1,    KC_2,    KC_3,    KC_4,    KC_5,    KC_EQL,  KC_MINS, KC_6,            KC_7,    KC_8,    KC_9,    KC_0},
-  {KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,   KC_TAB,  KC_ENT,  KC_MINS,         KC_4,    KC_5,    KC_6,    KC_MINS},
-  {KC_F6,   KC_F7,   KC_F8,   KC_F9,   KC_F10,  KC_F11,  KC_F12,   KC_NUHS,        KC_1,    KC_2,    KC_3,    KC_SLSH},
-  {KC_GRV,  KC_LSFT, KC_LALT, KC_LCTL, SFT_T(KC_SPC), RAISE, LOWER, SFT_T(KC_SPC), KC_0, KC_RCTL, KC_RSFT, KC_SLSH}
+  {KC_1,    KC_2,    KC_3,    KC_4,    KC_5,    __XXX__,  __XXX__, KC_6,      KC_7,    KC_8,    KC_9,     KC_0},
+  {KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,   KC_TAB,  KC_ENT,  __XXX__,    KC_4,    KC_5,    KC_6,    __XXX__},
+  {KC_F6,   KC_F7,   KC_F8,   KC_F9,   KC_F10,  KC_F11,  KC_F12,  __XXX__,    KC_1,    KC_2,    KC_3,    __XXX__},
+  {KC_GRV,  KC_LSFT, KC_LALT, KC_LCTL, SFT_T(KC_SPC), RAISE, LOWER,  KC_RALT, KC_0, KC_COMM,  KC_DOT,    KC_SLSH}
 },
 
 /* Adjust (Lower + Raise)
@@ -127,10 +127,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   {__XXX__, RESET,   __XXX__, __XXX__, __XXX__, __XXX__, __XXX__, __XXX__, __XXX__, __XXX__, __XXX__, KC_DEL},
   {__XXX__, __XXX__, __XXX__, AU_ON,   AU_OFF,  AG_NORM, AG_SWAP, QWERTY,  __XXX__, DVORAK,  __XXX__, __XXX__},
   {__XXX__, MUV_DE,  MUV_IN,  MU_ON,   MU_OFF,  MI_ON,   MI_OFF,  __XXX__, __XXX__, __XXX__, __XXX__, __XXX__},
-  {__XXX__, __XXX__, __XXX__, __XXX__, __XXX__, __XXX__, __XXX__, __XXX__, __XXX__, __XXX__, __XXX__, __XXX__}
+  {__XXX__, __XXX__, __XXX__, __XXX__, _______, _______, _______, _______, __XXX__, __XXX__, __XXX__, __XXX__}
 }
-
-
 };
 
 #ifdef AUDIO_ENABLE
