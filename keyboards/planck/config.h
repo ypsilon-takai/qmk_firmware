@@ -58,10 +58,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 /* Locking resynchronize hack */
 #define LOCKING_RESYNC_ENABLE
 
-/* key combination for command */
+/* key combination for command 
 #define IS_COMMAND() ( \
-    keyboard_report->mods == (MOD_BIT(KC_LSFT) | MOD_BIT(KC_RSFT)) \
-)
+         keyboard_report->mods == (MOD_BIT(KC_LSFT) | MOD_BIT(KC_RSFT)) \
+         )*/
+#define IS_COMMAND() (                                                  \
+         keyboard_report->mods == (MOD_BIT(KC_LALT) | MOD_BIT(KC_RCTL))     \
+         )
+
+#define TAPPING_TERM 200 // how long before a tap becomes a hold
+#define TAPPING_TOGGLE 1 // how many taps before triggering the toggle
+
+//#define BOOTMAGIC_KEY_SALT              KC_RSFT
 
 /*
  * Feature disable options
