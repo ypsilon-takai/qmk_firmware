@@ -25,7 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define PRODUCT_ID      0x6060
 #define MANUFACTURER    Ortholinear Keyboards
 #define PRODUCT         The Planck Keyboard
-#define DESCRIPTION     A compact ortholinear keyboard
+#define DESCRIPTION     Firmware mod by Ypsilon TAKAI
 
 /* key matrix size */
 #define MATRIX_ROWS 4
