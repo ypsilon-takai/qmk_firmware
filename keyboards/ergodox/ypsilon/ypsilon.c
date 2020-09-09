@@ -140,7 +140,11 @@ uint8_t oled_init(void) {
     SeeedOLED_clearDisplay();
     SeeedOLED_setDefault();
     oled_DispLogo();
-    //SeeedOLED_setHorizontalScrollProperties(Scroll_Left, 0, 4, Scroll_5Frames);
+    //SeeedOLED_setHorizontalScrollProperties(Scroll_Left, 0, 7, Scroll_5Frames);
+    //SeeedOLED_activateScroll();
+    //SeeedOLED_deactivateScroll();
+    oled_display_off();
+    display_on_state = false;
     
     oled_clearLineBuf(layerline_buf_1);
     oled_clearLineBuf(layerline_buf_2);
